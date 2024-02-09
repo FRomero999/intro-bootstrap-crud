@@ -1,7 +1,11 @@
 var plantilla = document.querySelector("template");
 var tabla = document.querySelector("tbody");
+var editButton = document.querySelector("button#edit");
 
 var bbdd = window.localStorage;
+
+// por defecto, no permito editar los campos
+var editable = false;
 
 // Almacena todos los alumnos y debe contener la misma información que la tabla
 var alumnos = [];
@@ -25,9 +29,13 @@ function addRow(alumno,pos){
   nuevaFila.querySelector(".alumno").textContent = alumno.alumno;
   nuevaFila.querySelector(".contraseña").textContent = alumno.contraseña;
 
-  nuevaFila.querySelector("button").addEventListener("click",()=>{
+  nuevaFila.querySelector("button").addEventListener("click",(ev)=>{
+    ev.preventDefault();
     deleteRow(pos);
   });
+
+  if(!editable) nuevaFila.querySelector("button").classList.add("d-none");
+
   tabla.appendChild(nuevaFila);
 }
 
@@ -68,8 +76,33 @@ document.querySelector("form").addEventListener("submit",
   }
 )
 
+// muestra u oculta los botones de edición
+function toggleEditButtons(show){
+    document.querySelectorAll("button.borrar").forEach( (el)=>{
+        if(show) el.classList.remove("d-none");
+        else el.classList.add("d-none");
+    });
+}
+
+
+
+
 // Inicio
 console.log("Cargando datos...");
 loadData();
 console.log(alumnos);
 refreshTable();
+
+editButton.addEventListener("click",(ev)=>{
+
+    if(editable){
+        editButton.textContent = "editar";
+    }else{
+        editButton.textContent = "bloquear";
+    }
+
+    editable = !editable;
+
+    toggleEditButtons(editable);
+
+});
